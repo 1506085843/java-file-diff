@@ -11,7 +11,7 @@
 
 ## 使用
 ```
-		//对比 D:\n1.txt和 D:\n2.txt 两个文件，获得不同点
+	//对比 D:\n1.txt和 D:\n2.txt 两个文件，获得不同点
         List<String> diffString = DiffHandleUtils.diffString("D:\\n1.txt","D:\\n2.txt");
 
         //在 D:\diff\ 目录下生成一个 diff.html 文件，打开便可看到两个文件的对比
