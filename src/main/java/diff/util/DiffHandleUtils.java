@@ -91,7 +91,7 @@ public class DiffHandleUtils {
     public static void generateDiffHtml(List<String> diffString, String htmlPath) {
         StringBuilder builder = new StringBuilder();
         for (String line : diffString) {
-            builder.append(line);
+            builder.append(escapeStr(line));
             builder.append("\n");
         }
         //githubCss来自 https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.1/styles/github.min.css
@@ -154,6 +154,28 @@ public class DiffHandleUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    //对字符串中的特殊字符进行转义
+    private static String escapeStr(String linStr) {
+        //如果含有反斜杠对其转义为\\
+        if (linStr.contains("\\")) {
+            linStr = linStr.replaceAll("\\\\", "\\\\\\\\");
+        }
+        //如果含有</script>将其转义为<\/script> ，否则浏览器解析到</script>将报错
+        if (linStr.contains("</script>")) {
+            linStr = linStr.replaceAll("</script>", "<\\\\/script>");
+        }
+        //如果含有字符串模板的反引号对其转义为\`
+        if (linStr.contains("`")) {
+            linStr = linStr.replaceAll("`", "\\\\`");
+        }
+        //如果含有$符号对其转义为\$
+        if (linStr.contains("$")) {
+            linStr = linStr.replaceAll("\\$", "\\\\\\$");
+        }
+        return linStr;
     }
 
     //统一差异格式插入到原始文件
