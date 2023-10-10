@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class DiffHandleUtils {
@@ -222,7 +223,7 @@ public class DiffHandleUtils {
                 if (map.get("orgRow") != 0) {
                     start = map.get("orgRow") + map.get("orgDel") - 1;
                 }
-                int end = nexMap.get("revRow") - 2;
+                int end = nexMap.get("orgRow") - 2;
                 //插入不变的
                 insert(result, getOrigList(original, start, end));
             }
@@ -254,7 +255,9 @@ public class DiffHandleUtils {
     //解析含有@@的行得到修改的行号删除或新增了几行
     public static Map<String, Integer> getRowMap(String str) {
         Map<String, Integer> map = new HashMap<>();
-        if (str.startsWith("@@")) {
+        //正则校验字符串是不是 "@@ -3,1 +3,1 @@" 这样的diff格式
+        String pattern = "^@@\\s-*\\d+,\\d+\\s+\\+\\d+,\\d+\\s+@@$";
+        if (Pattern.matches(pattern, str)) {
             String[] sp = str.split(" ");
             String org = sp[1];
             String[] orgSp = org.split(",");
@@ -263,7 +266,7 @@ public class DiffHandleUtils {
             //源文件删除的行数
             map.put("orgDel", Integer.valueOf(orgSp[1]));
 
-            String[] revSp = org.split(",");
+            String[] revSp = sp[2].split(",");
             //对比文件要增加行的行号
             map.put("revRow", Integer.valueOf(revSp[0].substring(1)));
             map.put("revAdd", Integer.valueOf(revSp[1]));
